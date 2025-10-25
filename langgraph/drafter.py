@@ -1,4 +1,4 @@
-from typing import Annotated, Sequence, TypedDict, cast
+from typing import Annotated, Sequence, TypedDict, cast, List
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -10,28 +10,34 @@ from langgraph.prebuilt import ToolNode
 
 load_dotenv()
 
-document_content = """"""
+# Maintain a versioned history of document states; latest version is the last item.
+document_history: List[str] = []
 
 class AgentState(TypedDict):
     messages:Annotated[Sequence[BaseMessage], add_messages]
 
 @tool
 def update(content: str)-> str:
-    """Update the document with new content"""
-    global document_content
-    document_content += "\n" + content
-    return document_content
+    """Create a new document version using the provided content.
+
+    This preserves previous versions in memory while making the provided
+    content the latest version. The tool returns the latest version content.
+    """
+    global document_history
+    document_history.append(content)
+    return content
 
 @tool
 def save(filename: str)-> str:
     """Save the document to a file"""
-    global document_content
+    global document_history
     if not filename.endswith(".txt"):
         filename += ".txt"
     
     try:
+        latest = document_history[-1] if document_history else ""
         with open(filename, "w") as f:
-            f.write(document_content)
+            f.write(latest)
         print(f"Document saved to {filename}")
         return f"Document saved to {filename}"
     except Exception as e:
@@ -51,7 +57,7 @@ def agent(state: AgentState) -> AgentState:
     - If the user wants to save the document, use the 'save' tool.
     - Make sure to show current document state after modification
 
-    Current Document Content:{document_content}
+    Current Document Content: {document_history[-1] if document_history else ""}
     """
     )
 
