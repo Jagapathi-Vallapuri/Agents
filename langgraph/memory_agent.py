@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from typing import TypedDict, List, Union
 from langchain_core.messages import HumanMessage, AIMessage
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 
 load_dotenv()
@@ -11,7 +11,7 @@ load_dotenv()
 class AgentState(TypedDict):
     messages: List[Union[HumanMessage, AIMessage]]
 
-llm = ChatGroq(api_key=os.getenv("GROQ_API_KEY"), model="openai/gpt-oss-20b", temperature=0.3)
+llm = ChatOpenAI(api_key="", base_url="http://127.0.0.1:1234/v1", temperature=0.3)
 
 def process(state:AgentState) -> AgentState:
     response = llm.invoke(state["messages"])

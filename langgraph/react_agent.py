@@ -1,7 +1,7 @@
 import os 
 from typing import Annotated, Sequence, TypedDict
 from langchain_core.messages import BaseMessage, ToolMessage, SystemMessage
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
 from langgraph.graph.message import add_messages
 from langgraph.graph import StateGraph, END
@@ -50,8 +50,7 @@ def should_continue(state: AgentState):
     
 tools = [add, subtract, multiply]
 
-model = ChatGroq(model="openai/gpt-oss-20b").bind_tools(tools)
-
+model = ChatOpenAI(base_url="http://127.0.0.1:1234/v1", temperature=0.3, api_key="s").bind_tools(tools)
 
 graph = StateGraph(AgentState)
 
