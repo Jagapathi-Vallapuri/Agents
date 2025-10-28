@@ -10,7 +10,6 @@ from langgraph.prebuilt import ToolNode
 
 load_dotenv()
 
-# Maintain a versioned history of document states; latest version is the last item.
 document_history: List[str] = []
 
 class AgentState(TypedDict):

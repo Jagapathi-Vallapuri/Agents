@@ -1,6 +1,6 @@
 from typing import TypedDict, List
 from langchain_core.messages import HumanMessage
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 import os
 from langgraph.graph import StateGraph, START, END
 
@@ -13,7 +13,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 class AgentState(TypedDict):
     messages: List[HumanMessage]
 
-llm = ChatGroq(api_key=GROQ_API_KEY, model="openai/gpt-oss-20b", temperature=0.3)
+llm = ChatOpenAI(api_key="hii", base_url="http://localhost:1234/v1", temperature=0.3)
 
 def process(state: AgentState) -> AgentState:
     response = llm.invoke(state["messages"])
